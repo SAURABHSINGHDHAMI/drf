@@ -134,4 +134,4 @@ class PersonViewSet(viewsets.ModelViewSet):
         if search:
             queryset = queryset.filter(name__startswith = search)
         serializer = PersonSerializer(queryset, many=True)
-        return Response({'status' : 200, 'data' : serializer.data}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'status' : 200, 'data' : serializer.data}, status=status.HTTP_200_OK)
