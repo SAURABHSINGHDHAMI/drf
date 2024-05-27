@@ -37,8 +37,36 @@ urlpatterns = [
 
 In this setup, a `DefaultRouter` is used to automatically generate the URL patterns for the `PersonViewSet`. The `register` method of the router registers the viewset with a base URL of `person/`.
 
+## Adding Custom Functionality
+
+To add custom functionality, such as search, you can override the methods of the `ModelViewSet`.
+
+### views.py with Search Functionality
+
+```python
+from rest_framework import viewsets
+from rest_framework.response import Response
+from .models import Person
+from .serializers import PersonSerializer
+
+class PersonViewSet(viewsets.ModelViewSet):
+    serializer_class = PersonSerializer
+    queryset = Person.objects.all()
+
+    def list(self, request):
+        search = request.GET.get('search')
+        queryset = self.queryset
+        if search:
+            queryset = queryset.filter(name__startswith=search)
+        serializer = PersonSerializer(queryset, many=True)
+        return Response({'status': 200, 'data': serializer.data})
+```
+
+In this modified example, the `list` method is overridden to add search functionality. The method filters the `Person` instances by their name if a `search` query parameter is provided.
+
 ## Summary
 
 - **ModelViewSet**: Simplifies the creation of CRUD APIs by providing a single class that handles all CRUD operations.
-- **Minimal Code**: Requires only two lines of code to set up a fully functional CRUD API.
+- **Minimal Code**: Requires only a few lines of code to set up a fully functional CRUD API.
 - **Automatic URL Routing**: Uses DRF routers to automatically generate URL patterns for the viewset.
+- **Custom Functionality**: Methods of `ModelViewSet` can be overridden to add custom functionality such as search.
